@@ -75,12 +75,21 @@ def process_user_message(msg):
         )
 
     # Option 2: Ride Share
-    elif msg == "2":
+    elif msg.startswith("ride"):
+        route = msg.replace("ride", "").strip()
+        if not route:
+            return (
+                "🚗 *Bolt / Uber Ride Share & Safety*\n\n"
+                "Split fares with fellow students and travel safer in groups.\n\n"
+                "Reply with your pickup & destination to match:\n"
+                "Example: *RIDE Cape Station to Bellville*\n"
+                "Example: *RIDE D6 to V&A Waterfront*"
+            )
         return (
-            "🚗 *Bolt / Uber Ride Share & Safety*\n\n"
-            "Split fares with fellow students and travel safer in groups.\n\n"
-            "Reply with your route to match:\n"
-            "Example: *RIDE Cape Station to Bellville Campus*"
+            f"🚗 *Ride Request Logged!*\n\n"
+            f"📍 *Route:* {route.title()}\n"
+            "🔍 Searching for students traveling this route...\n\n"
+            "We will notify you on WhatsApp as soon as a match is found to split the fare!"
         )
 
     # Option 3: Local Merchants
@@ -94,43 +103,40 @@ def process_user_message(msg):
         )
 
     # Option 4: Papers & Notes
-    elif msg == "4":
+    elif msg == "4" or msg == "notes":
         return (
             "📚 *Past Papers, Study Notes & Test Prep*\n\n"
             "Get instant access to study resources uploaded by fellow students:\n\n"
             "• Reply *JAVA* for Java Programming notes & scopes\n"
-            "• Reply *PYTHON* for Python Essentials study material\n"
+            "• Reply *PYTHON* for PRG15xS Python Essentials study material\n"
             "• Reply *NETWORKS* for Communications Networks past papers\n"
             "• Reply *UPLOAD* to share your own notes with the hub!\n\n"
             "Or reply *MENU* to return to the main options."
         )
 
-    # Specific Subject Triggers
+    # Specific Subject Triggers with Real Drive Links
     elif msg == "java":
         return (
             "☕ *Java Programming Study Hub*\n\n"
-            "• Past Test Papers & Solutions: [Drive Link]\n"
-            "• Variable Scope & Methods Cheat Sheet\n"
-            "• NetBeans Setup & Debugging Guide\n\n"
-            "Reply *MENU* to return to main menu."
+            "📁 *Access Notes, Scopes & Past Papers:*\n"
+            "https://drive.google.com/drive/folders/14f7YifekdJQnEO6oQp9laU6LGWAuzXV8\n\n"
+            "Reply *MENU* to return to the main menu."
         )
 
     elif msg == "python":
         return (
-            "🐍 *Python Essentials Hub*\n\n"
-            "• Cisco Python Essentials Course Summaries\n"
-            "• Practical Coding Exercise Solutions\n"
-            "• Thonny IDE Quick Reference\n\n"
-            "Reply *MENU* to return to main menu."
+            "🐍 *Python Essentials Hub (PRG15xS)*\n\n"
+            "📁 *Access PRG15xS Functions, Lists & File Notes:*\n"
+            "https://drive.google.com/drive/folders/12JYCLrdB1kd3qButNORPkD38jLn5MB9K\n\n"
+            "Reply *MENU* to return to the main menu."
         )
 
     elif msg == "networks":
         return (
             "🌐 *Communications Networks Hub*\n\n"
-            "• OSI & TCP/IP Model Summary Sheets\n"
-            "• Subnetting & IP Addressing Practice Questions\n"
-            "• Cisco Cybersecurity Intro Notes\n\n"
-            "Reply *MENU* to return to main menu."
+            "📁 *Access OSI Models, Subnetting & Past Papers:*\n"
+            "https://drive.google.com/drive/folders/1JAGxzw0vX70b_6RbkoANPFEDazgMzT8z\n\n"
+            "Reply *MENU* to return to the main menu."
         )
 
     # Fallback
