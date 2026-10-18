@@ -1,11 +1,20 @@
-from flask import Flask, request, jsonify
+import os
 import requests
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# Verification token for Meta setup
 VERIFY_TOKEN = "studenthub123"
+
+# Direct credentials from Meta Dashboard
+ACCESS_TOKEN = "EAAQJYNSf5OUBS8KFgKIl2sGrcpZC3oxZCYAoXPKAmdK4ZAXZA1m4eAtJMD3NACcRdalqmUbyTO9hR9kow8NQ3wpEhmJQGJ3uFQRgy8OM5IiCZBKnNcslxE3Nbv8y9AhdFH5sLrCdEvqnnkdWaoyEbwwMLMQLZAr1DdOevsJIdiDBQuolnL2YemoFC5ZCzfYdfCk2Tal7QY3ZB7tqMu56m9ZA2neT5zrhZAtWmRXaqCoVUsPHtV3nWGqig27QtyqwuyOWGUQj3BXLicjYZAVpPZCU6nEmZAD1K4gZDZD"
 PHONE_NUMBER_ID = "1471409749382189"
-ACCESS_TOKEN = "EAAQJYNSf5OUBS7g5AosdmcfNiQhTkQ0zVPmSxmaUJHgByiIreJk9JjReH2iXfC7VY6zRpDHRaWOpcUiRQXSbUZBe1qNFZAO5SneFh2dItlOnqhFuhksJH6zIACinkh78sS8am5emIxZB0HkNWMtpYnJcqjYjqfOhXCjIoftDQMNNSl3VdXRBvHVrRdEA1GzWweO3R81paZBIW3U0aYgEHm9FZC7vMHva0DYPsyZA2lVZAQaGEzRZBZAvGa9cl4XoZC5Xm8X1sWxcIdkfLwnIfnXvxrZAvdP"
+
+@app.route("/", methods=["GET"])
+def home():
+    return "Cape Town Student Hub Bot is Running!", 200
+
 @app.route("/webhook", methods=["GET"])
 def verify_webhook():
     mode = request.args.get("hub.mode")
@@ -13,44 +22,50 @@ def verify_webhook():
     challenge = request.args.get("hub.challenge")
 
     if mode == "subscribe" and token == VERIFY_TOKEN:
-        print("Webhook verified successfully!")
+        print("WEBHOOK VERIFIED SUCCESSFULLY")
         return challenge, 200
     return "Verification failed", 403
 
 @app.route("/webhook", methods=["POST"])
-def receive_message():
+def webhook():
     data = request.get_json()
+    print("INCOMING WEBHOOK PAYLOAD:", data)
+
     try:
-        entry = data.get("entry", [])[0]
-        changes = entry.get("changes", [])[0]
-        value = changes.get("value", {})
-        messages = value.get("messages", [])
+        entry = data["entry"][0]
+        changes = entry["changes"][0]
+        value = changes["value"]
 
-        if messages:
-            msg = messages[0]
-            from_number = msg.get("from")
-            text = msg.get("text", {}).get("body", "")
+        # Process incoming text messages
+        if "messages" in value:
+            message = value["messages"][0]
+            from_number = message["from"]
+            
+            # Check if text exists
+            if message.get("type") == "text":
+                text_body = message["text"]["body"]
+                send_whatsapp_message(from_number, f"Welcome to Cape Town Student Hub! You said: '{text_body}'")
 
-            # Send response back to WhatsApp
-            url = f"https://graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages"
-            headers = {
-                "Authorization": f"Bearer {ACCESS_TOKEN}",
-                "Content-Type": "application/json"
-            }
-            payload = {
-                "messaging_product": "whatsapp",
-                "to": from_number,
-                "text": {"body": f"Welcome to Cape Town Student Hub! You said: '{text}'"}
-            }
-            res = requests.post(url, headers=headers, json=payload)
-            print("Response status code:", res.status_code)
-            print("Response body:", res.text)
-
-        return jsonify({"status": "success"}), 200
     except Exception as e:
-        print("Error processing webhook:", e)
-        return jsonify({"status": "error"}), 500
+        print("Error parsing webhook:", e)
+
+    return jsonify({"status": "success"}), 200
+
+def send_whatsapp_message(to_number, text):
+    url = f"https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/messages"
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to_number,
+        "type": "text",
+        "text": {"body": text}
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    print("OUTBOUND REPLY RESPONSE:", response.status_code, response.text)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run(host="0.0.0.0", port=5000)
 
