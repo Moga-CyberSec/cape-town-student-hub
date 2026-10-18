@@ -22,31 +22,36 @@ def verify_webhook():
 def receive_message():
     data = request.get_json()
     try:
-        if data.get("entry") and data["entry"][0].get("changes") and data["entry"][0]["changes"][0]["value"].get("messages"):
-            message_obj = data["entry"][0]["changes"][0]["value"]["messages"][0]
-            from_number = message_obj["from"]
-            user_text = message_obj.get("text", {}).get("body", "").strip()
+        entry = data.get("entry", [])[0]
+        changes = entry.get("changes", [])[0]
+        value = changes.get("value", {})
+        messages = value.get("messages", [])
 
-            reply_text = f"Welcome to Cape Town Student Hub! You said: '{user_text}'"
-            send_whatsapp_message(from_number, reply_text)
+        if messages:
+            msg = messages[0]
+            from_number = msg.get("from")
+            text = msg.get("text", {}).get("body", "")
+
+            # Send response back to WhatsApp
+            url = f"https://graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages"
+            headers = {
+                "Authorization": f"Bearer {ACCESS_TOKEN}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "messaging_product": "whatsapp",
+                "to": from_number,
+                "text": {"body": f"Welcome to Cape Town Student Hub! You said: '{text}'"}
+            }
+            res = requests.post(url, headers=headers, json=payload)
+            print("Response status code:", res.status_code)
+            print("Response body:", res.text)
+
+        return jsonify({"status": "success"}), 200
     except Exception as e:
-        print(f"Error handling message: {e}")
-
-    return jsonify({"status": "received"}), 200
-
-def send_whatsapp_message(recipient, text):
-    url = f"https://graph.facebook.com/v20.0/{PHONE_NUMBER_ID}/messages"
-    headers = {
-        "Authorization": f"Bearer {ACCESS_TOKEN}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "messaging_product": "whatsapp",
-        "to": recipient,
-        "type": "text",
-        "text": {"body": text}
-    }
-    requests.post(url, json=payload, headers=headers)
+        print("Error processing webhook:", e)
+        return jsonify({"status": "error"}), 500
 
 if __name__ == "__main__":
-    app.run(port=5000)
+    app.run(host="0.0.0.0", port=10000)
+
