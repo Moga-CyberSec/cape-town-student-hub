@@ -7,8 +7,8 @@ app = Flask(__name__)
 # Verification token for Meta setup
 VERIFY_TOKEN = "studenthub123"
 
-# Direct credentials from Meta Dashboard
-ACCESS_TOKEN = "EAAQJYNSf5OUBS8KFgKIl2sGrcpZC3oxZCYAoXPKAmdK4ZAXZA1m4eAtJMD3NACcRdalqmUbyTO9hR9kow8NQ3wpEhmJQGJ3uFQRgy8OM5IiCZBKnNcslxE3Nbv8y9AhdFH5sLrCdEvqnnkdWaoyEbwwMLMQLZAr1DdOevsJIdiDBQuolnL2YemoFC5ZCzfYdfCk2Tal7QY3ZB7tqMu56m9ZA2neT5zrhZAtWmRXaqCoVUsPHtV3nWGqig27QtyqwuyOWGUQj3BXLicjYZAVpPZCU6nEmZAD1K4gZDZD"
+# Active credentials from Meta
+ACCESS_TOKEN = "EAAQJYNSf5OUBSzioIkvmPf3cZCLtDVM9Nzg9MUsMno0ZBspOSLiEkpepkF8PA8wqywFdf8e7jAsA6UTDJRPjqKgw9xCTxUWijWshSOylAnj1BZCG9oGMy4XR8bPaRe4ju8dXjVMqAUzRvbCSRE6rSThaZAy58saWcx3vBgaFAx4vq3fpwDMe3MWmwb19hQ5yoxET7c4XBBUZBPcuq4Jpsn86XJ3TwFUTl2TTNPAZDZD"
 PHONE_NUMBER_ID = "1471409749382189"
 
 @app.route("/", methods=["GET"])
@@ -68,4 +68,3 @@ def send_whatsapp_message(to_number, text):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-
