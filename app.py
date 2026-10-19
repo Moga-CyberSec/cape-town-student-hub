@@ -98,4 +98,68 @@ def process_user_message(msg):
             "🛒 *Local Student Services & Deals*\n\n"
             "• 🧺 *PM Laundromat CPT:* Drop-off wash, dry & fold.\n"
             "• 💻 *Tech & Phone Repair:* Student rates on screen fixes.\n"
-            "• 🛍️ *Local
+            "• 🛍️ *Local Merchants:* WhatsApp digital ledger for local shops.\n\n"
+            "Reply *MENU* to return to the main hub."
+        )
+
+    # Option 4: Papers & Notes
+    elif msg in ["4", "notes"]:
+        return (
+            "📚 *Past Papers, Study Notes & Test Prep*\n\n"
+            "Get instant access to study resources uploaded by fellow students:\n\n"
+            "• Reply *JAVA* for Java Programming notes & scopes\n"
+            "• Reply *PYTHON* for PRG15xS Python Essentials study material\n"
+            "• Reply *NETWORKS* for Communications Networks past papers\n"
+            "• Reply *UPLOAD* to share your own notes with the hub!\n\n"
+            "Or reply *MENU* to return to the main options."
+        )
+
+    # Specific Subject Triggers with Real Drive Links
+    elif msg == "java":
+        return (
+            "☕ *Java Programming Study Hub*\n\n"
+            "📁 *Access Notes, Scopes & Past Papers:*\n"
+            "https://drive.google.com/drive/folders/14f7YifekdJQnEO6oQp9laU6LGWAuzXV8\n\n"
+            "Reply *MENU* to return to the main menu."
+        )
+
+    elif msg == "python":
+        return (
+            "🐍 *Python Essentials Hub (PRG15xS)*\n\n"
+            "📁 *Access PRG15xS Functions, Lists & File Notes:*\n"
+            "https://drive.google.com/drive/folders/12JYCLrdB1kd3qButNORPkD38jLn5MB9K\n\n"
+            "Reply *MENU* to return to the main menu."
+        )
+
+    elif msg == "networks":
+        return (
+            "🌐 *Communications Networks Hub*\n\n"
+            "📁 *Access OSI Models, Subnetting & Past Papers:*\n"
+            "https://drive.google.com/drive/folders/1JAGxzw0vX70b_6RbkoANPFEDazgMzT8z\n\n"
+            "Reply *MENU* to return to the main menu."
+        )
+
+    # Fallback
+    else:
+        return (
+            f"Received: '{msg}'\n\n"
+            "Reply *MENU* to view main options (1: Accommodation, 2: Ride Share, 3: Services, 4: Notes & Papers)."
+        )
+
+def send_whatsapp_message(to_number, text):
+    url = f"https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/messages"
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to_number,
+        "type": "text",
+        "text": {"body": text}
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    print("OUTBOUND REPLY RESPONSE:", response.status_code)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
